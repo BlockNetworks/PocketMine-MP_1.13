@@ -25,49 +25,43 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-
-use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\NetworkSession;
-use function count;
 
-class ExplodePacket extends DataPacket{
-	public const NETWORK_ID = ProtocolInfo::EXPLODE_PACKET;
+class CompletedUsingItemPacket extends DataPacket{
+	public const NETWORK_ID = ProtocolInfo::COMPLETED_USING_ITEM_PACKET;
 
-	/** @var Vector3 */
-	public $position;
-	/** @var float */
-	public $radius;
-	/** @var Vector3[] */
-	public $records = [];
+	public const ACTION_UNKNOWN = -1;
+	public const ACTION_EQUIP_ARMOR = 0;
+	public const ACTION_EAT = 1;
+	public const ACTION_ATTACK = 2;
+	public const ACTION_CONSUME = 3;
+	public const ACTION_THROW = 4;
+	public const ACTION_SHOOT = 5;
+	public const ACTION_PLACE = 6;
+	public const ACTION_FILL_BOTTLE = 7;
+	public const ACTION_FILL_BUCKET = 8;
+	public const ACTION_POUR_BUCKET = 9;
+	public const ACTION_USE_TOOL = 10;
+	public const ACTION_INTERACT = 11;
+	public const ACTION_RETRIEVED = 12;
+	public const ACTION_DYED = 13;
+	public const ACTION_TRADED = 14;
 
-	public function clean(){
-		$this->records = [];
-		return parent::clean();
-	}
+	/** @var int */
+	public $itemId;
+	/** @var int */
+	public $action;
 
 	protected function decodePayload(){
-		$this->position = $this->getVector3();
-		$this->radius = (float) ($this->getVarInt() / 32);
-		$count = $this->getUnsignedVarInt();
-		for($i = 0; $i < $count; ++$i){
-			$x = $y = $z = null;
-			$this->getSignedBlockPosition($x, $y, $z);
-			$this->records[$i] = new Vector3($x, $y, $z);
-		}
+		//TODO
 	}
 
 	protected function encodePayload(){
-		$this->putVector3($this->position);
-		$this->putVarInt((int) ($this->radius * 32));
-		$this->putUnsignedVarInt(count($this->records));
-		if(count($this->records) > 0){
-			foreach($this->records as $record){
-				$this->putSignedBlockPosition((int) $record->x, (int) $record->y, (int) $record->z);
-			}
-		}
+		$this->putLShort($this->itemId);
+		$this->putLInt($this->action);
 	}
 
 	public function handle(NetworkSession $session) : bool{
-		return $session->handleExplode($this);
+		return $session->handleCompletedUsingItem($this);
 	}
 }

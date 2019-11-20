@@ -19,12 +19,35 @@
  *
 */
 
-// composer autoload doesn't use require_once and also pthreads can inherit things
-if(defined('pocketmine\_GLOBAL_CONSTANTS_INCLUDED')){
-	return;
-}
-define('pocketmine\_GLOBAL_CONSTANTS_INCLUDED', true);
+declare(strict_types=1);
 
-const INT32_MIN = -0x80000000;
-const INT32_MAX = 0x7fffffff;
-define("INT32_MASK", is_int(0xffffffff) ? 0xffffffff : -1);
+
+namespace pocketmine\utils;
+
+
+class SkinAnimation{
+	/** @var SerializedImage */
+	private $image;
+	/** @var int */
+	private $type;
+	/** @var float */
+	private $frames;
+
+	public function __construct(SerializedImage $image, int $type, float $frames){
+		$this->image = $image;
+		$this->type = $type;
+		$this->frames = $frames;
+	}
+
+	public function getImage() : SerializedImage{
+		return $this->image;
+	}
+
+	public function getType() : int{
+		return $this->type;
+	}
+
+	public function getFrames() : float{
+		return $this->frames;
+	}
+}
